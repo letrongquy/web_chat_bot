@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat Bot Kinh Tế</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+</head>
+<body>
+    <h1>Chat Bot Kinh Tế</h1>
+    <div>
+        <textarea id="chat_content" style="width: 300px; height: 200px;"></textarea>
+        <br>
+        <input type="text" id="user_message">
+        <br>
+        <button id="btn_send">Gửi</button>
+    </div>
+
+    <script>
+        function addTotextarea($ta, text) {
+            var val = $("#" + $ta.attr("id")).val();
+            if (val) {
+                $("#" + $ta.attr("id")).val(val + '\n' + text);
+            } else {
+                $("#" + $ta.attr("id")).val(text);
+            }
+            $("#" + $ta.attr("id")).scrollTop($("#" + $ta.attr("id"))[0].scrollHeight);
+        }
+
+        // Khi người dùng nhấn Enter, tin nhắn sẽ được gửi
+        $('#user_message').keypress(function(event){
+            var keycode = (event.KeyCode ? event.keycode : event.which);
+            if (keycode == '13') {
+                sendchat();
+            }
+        });
+
+        $('#btn_send').click(function(){
+            sendchat();
+        });
+
+        function sendchat() {
+            // Lấy giá trị từ người dùng
+            var user_message = $('#user_message').val();
+            $('#user_message').val('');
+
+            // Thêm tin nhắn của người dùng vào textarea
+            addTotextarea($('#chat_content'), "[YOU]: " + user_message);
+
+            // Gửi tin nhắn đến webhook của Rasa
+            $.ajax({
+                type: 'POST',
+                url: "https://526e-2402-800-61cf-f84e-a51b-95aa-c440-53b2.ngrok-free.app/webhooks/rest/webhook",
+                data: JSON.stringify({"sender": "test", "message": user_message}),
+                contentType: "application/json",
+                dataType: "json",
+                success: function (data) {
+                    // Hiển thị phản hồi từ bot
+                    addTotextarea($('#chat_content'), "[BOT]: " + data[0].text);
+                }
+            });
+        }
+    </script>
+</body>
+</html>

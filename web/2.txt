@@ -1,0 +1,12 @@
+1 rasa luôn chạy
+2 web:
+
+
+
+account:
+
+ 
+
+
+
+download git: use cmd
